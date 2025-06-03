@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>엑셀 붙여넣기 보기용 웹</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f8f9fa;
+      padding: 40px;
+    }
+    #pasteArea {
+      border: 2px dashed #007bff;
+      padding: 20px;
+      background: white;
+      min-height: 300px;
+      overflow: auto;
+    }
+    #pasteArea * {
+      pointer-events: none; /* 수정 불가 처리 */
+    }
+  </style>
+</head>
+<body>
+  <h1>엑셀/텍스트 붙여넣기 뷰어</h1>
+  <p>엑셀에서 복사한 내용을 아래에 붙여넣으세요 (Ctrl+V)</p>
+  
+  <div id="pasteArea" contenteditable="true" onpaste="handlePaste(event)"></div>
+
+  <script>
+    function handlePaste(e) {
+      e.preventDefault();
+      const clipboard = e.clipboardData || window.clipboardData;
+      const htmlData = clipboard.getData('text/html');
+      const textData = clipboard.getData('text/plain');
+
+      const pasteArea = document.getElementById('pasteArea');
+
+      if (htmlData) {
+        pasteArea.innerHTML = htmlData;
+      } else {
+        pasteArea.innerText = textData;
+      }
+
+      // 붙여넣기 후 읽기 전용으로 변경
+      setTimeout(() => {
+        pasteArea.removeAttribute('contenteditable');
+      }, 100);
+    }
+  </script>
+</body>
+</html>
