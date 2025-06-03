@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>엑셀+이미지 편집 뷰어</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f8f9fa;
+      padding: 40px;
+    }
+    #pasteArea {
+      border: 2px dashed #007bff;
+      padding: 20px;
+      background: white;
+      min-height: 300px;
+      overflow: auto;
+    }
+    #uploadLabel {
+      display: inline-block;
+      background: #007bff;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+    #imgUploader {
+      display: none;
+    }
+    #clearButton {
+      margin-left: 10px;
+      background: #dc3545;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      margin: 10px 0;
+    }
+    .img-wrapper {
+      display: inline-block;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>엑셀 + 이미지 붙여넣기 (편집 가능)</h1>
+  <p>엑셀 표 또는 이미지를 붙여넣고 자유롭게 수정하거나 삭제하세요.</p>
+
+  <label id="uploadLabel" for="imgUploader">이미지 업로드</label>
+  <input type="file" accept="image/*" id="imgUploader">
+  <button id="clearButton">내용 지우기</button>
+
+  <div id="pasteArea" contenteditable="true">여기에 붙여넣거나 이미지를 끌어다 놓으세요.</div>
+
+  <script>
+    const pasteArea = document.getElementById('pasteArea');
+    const uploader = document.getElementById('imgUploader');
+
+    // 엑셀 표 or 텍스트 붙여넣기
+    pasteArea.addEventListener('paste', function (e) {
+      e.preventDefault();
+      const clipboard = e.clipboardData || window.clipboardData;
+      const html = clipboard.getData('text/html');
+      const text = clipboard.getData('text/plain');
+      if (html) pasteArea.innerHTML += html;
+      else pasteArea.innerText += text;
+    });
+
+    // 이미지 업로드
+    uploader.addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      insertImage(file);
+    });
+
+    // 이미지 드래그앤드롭
+    pasteArea.addEventListener('dragover', e => { e.preventDefault(); pasteArea.style.borderColor = '#28a745'; });
+    pasteArea.addEventListener('dragleave', e => { e.preventDefault(); pasteArea.style.borderColor = '#007bff'; });
+    pasteArea.addEventListener('drop', function (e) {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) insertImage(file);
+      pasteArea.style.borderColor = '#007bff';
+    });
+
+    // 이미지 삽입 (커서 이동 가능 + 삭제 가능)
+    function insertImage(file) {
+      const url = URL.createObjectURL(file);
+      const wrapper = document.createElement('div');
+      wrapper.className = 'img-wrapper';
+      wrapper.contentEditable = "true";
+
+      const img = document.createElement('img');
+      img.src = url;
+
+      wrapper.appendChild(img);
+      pasteArea.appendChild(wrapper);
+
+      // 커서를 이미지 뒤로 이동
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.setStartAfter(wrapper);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+
+    // 내용 지우기
+    document.getElementById('clearButton').addEventListener('click', function () {
+      pasteArea.innerHTML = '';
+    });
+  </script>
+</body>
+</html>
