@@ -2,94 +2,569 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>붙여넣기 통합 뷰어</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "맑은 고딕", helvetica, "Apple SD Gothic Neo", sans-serif;
+      background-color: #f7f9fc;
       margin: 0;
       padding: 20px;
+      line-height: 1.6;
     }
+    
     .container {
-      max-width: 800px;
+      max-width: 1000px;
       margin: 0 auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
     }
+    
+    .header {
+      background: linear-gradient(135deg, #1ec800 0%, #0fb300 100%);
+      color: white;
+      padding: 24px 32px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    
+    .header p {
+      margin: 8px 0 0 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .content {
+      padding: 32px;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      color: #374151;
+      transition: all 0.2s;
+    }
+    
+    .btn:hover {
+      background: #f9fafb;
+      border-color: #1ec800;
+    }
+    
+    .btn-primary {
+      background: #1ec800;
+      color: white;
+      border-color: #1ec800;
+    }
+    
+    .btn-primary:hover {
+      background: #0fb300;
+    }
+    
     #pasteArea {
       width: 100%;
       min-height: 400px;
-      border: 2px dashed #00a2ff;
-      padding: 20px;
-      background-color: #fafafa;
+      border: 2px dashed #d1d5db;
+      border-radius: 8px;
+      padding: 24px;
+      background: #fafbfc;
       outline: none;
-      white-space: pre-wrap;
-      overflow: auto;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #374151;
+      position: relative;
+      transition: border-color 0.2s;
     }
+    
+    #pasteArea:focus {
+      border-color: #1ec800;
+      background: #ffffff;
+    }
+    
+    #pasteArea:empty:before {
+      content: '엑셀 표, 텍스트, 이미지를 여기에 붙여넣으세요 (Ctrl+V)\A\A📊 엑셀 표: 셀 범위 선택 후 Ctrl+C → Ctrl+V\A📝 텍스트: 일반 텍스트나 구조화된 데이터\A🖼️ 이미지: 스크린샷이나 복사된 이미지';
+      color: #9ca3af;
+      white-space: pre-line;
+      font-style: normal;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+    }
+    
+    /* 파파고 스타일 테이블 */
     table {
       border-collapse: collapse;
       width: 100%;
-      margin-top: 10px;
+      margin: 16px 0;
+      font-size: 13px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      overflow: hidden;
     }
-    table td {
-      border: 1px solid #ccc;
-      padding: 6px 8px;
+    
+    table td, table th {
+      border: 1px solid #e5e7eb;
+      padding: 8px 12px;
+      text-align: left;
+      vertical-align: top;
+      background: white;
+    }
+    
+    table th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #374151;
+    }
+    
+    table tr:nth-child(even) td {
+      background: #f9fafb;
+    }
+    
+    /* 이미지 스타일 */
+    .image-container {
+      margin: 16px 0;
+      text-align: center;
+    }
+    
+    .image-container img {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* 텍스트 블록 */
+    .text-block {
+      margin: 16px 0;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 6px;
+      border-left: 3px solid #1ec800;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .status {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 6px;
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 1000;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+    
+    .status.show {
+      transform: translateX(0);
+    }
+    
+    .status.success {
+      background: #1ec800;
+    }
+    
+    .status.error {
+      background: #dc2626;
+    }
+    
+    .item-info {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      background: rgba(30, 200, 0, 0.1);
+      color: #1ec800;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>엑셀/텍스트/이미지 붙여넣기</h1>
-    <p>엑셀 표, 텍스트, 캡처 이미지를 복사한 후 아래 영역에 Ctrl+V 하세요.</p>
-    <div id="pasteArea" contenteditable="true"></div>
+    <div class="header">
+      <h1>📋 붙여넣기 통합 뷰어</h1>
+      <p>엑셀 표와 텍스트를 안전하게 확인하세요</p>
+    </div>
+    
+    <div class="content">
+      <div class="controls">
+        <button class="btn btn-primary" onclick="focusPasteArea()">📋 붙여넣기 활성화</button>
+        <button class="btn" onclick="downloadAsHtml()">💾 HTML 저장</button>
+        <button class="btn" onclick="copyAllContent()">📄 전체 복사</button>
+        <button class="btn" onclick="clearAll()">🗑️ 지우기</button>
+      </div>
+      
+      <div id="pasteArea" contenteditable="true">
+        <div class="item-info" id="itemInfo" style="display: none;">항목: 0</div>
+      </div>
+    </div>
   </div>
+  
+  <div class="status" id="status"></div>
 
   <script>
     const pasteArea = document.getElementById('pasteArea');
+    const itemInfo = document.getElementById('itemInfo');
+    const status = document.getElementById('status');
+    let itemCount = 0;
 
+    // 상태 메시지 표시
+    function showStatus(message, type = 'success') {
+      status.textContent = message;
+      status.className = `status ${type} show`;
+      setTimeout(() => {
+        status.classList.remove('show');
+      }, 3000);
+    }
+
+    // 항목 수 업데이트
+    function updateItemCount() {
+      itemCount++;
+      itemInfo.textContent = `항목: ${itemCount}`;
+      itemInfo.style.display = 'block';
+    }
+
+    // 핵심 붙여넣기 로직 (파파고 스타일)
     pasteArea.addEventListener('paste', function (e) {
       e.preventDefault();
-      const clipboard = e.clipboardData;
-      const html = clipboard.getData('text/html');
-      const text = clipboard.getData('text/plain');
-      const items = clipboard.items;
+      
+      const clipboardData = e.clipboardData;
+      const html = clipboardData.getData('text/html');
+      const text = clipboardData.getData('text/plain');
+      const items = clipboardData.items;
+      
+      console.log('HTML 데이터:', html ? '있음' : '없음');
+      console.log('텍스트 데이터:', text ? '있음' : '없음');
+      
+      let processed = false;
 
-      // 1. 이미지 처리
+      // 1. 이미지 우선 처리 (보안 환경 고려)
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
         if (item.type.indexOf('image') !== -1) {
           const file = item.getAsFile();
-          const url = URL.createObjectURL(file);
-          const img = document.createElement('img');
-          img.src = url;
-          img.style.maxWidth = '100%';
-          img.style.margin = '10px 0';
-          pasteArea.appendChild(img);
+          if (file) {
+            try {
+              const url = URL.createObjectURL(file);
+              const container = document.createElement('div');
+              container.className = 'image-container';
+              const img = document.createElement('img');
+              img.src = url;
+              img.alt = '붙여넣은 이미지';
+              container.appendChild(img);
+              pasteArea.appendChild(container);
+              updateItemCount();
+              showStatus('이미지가 추가되었습니다!');
+              processed = true;
+            } catch (error) {
+              // 이미지 처리가 막힌 경우
+              const container = document.createElement('div');
+              container.className = 'text-block';
+              container.textContent = `[이미지] - 크기: ${(file.size / 1024).toFixed(1)}KB, 타입: ${file.type}`;
+              pasteArea.appendChild(container);
+              updateItemCount();
+              showStatus('이미지 정보가 추가되었습니다 (미리보기 제한)');
+              processed = true;
+            }
+          }
         }
       }
 
-      // 2. 엑셀 표 (HTML)
-      if (html && html.includes('<table')) {
-        pasteArea.innerHTML += html;
-        return;
+      // 2. HTML 데이터 처리 (엑셀 표 포함)
+      if (html && !processed) {
+        console.log('HTML 내용 처리 중...');
+        
+        // HTML을 임시 요소에 파싱
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        
+        // 테이블 찾기
+        const tables = tempDiv.querySelectorAll('table');
+        if (tables.length > 0) {
+          console.log(`테이블 ${tables.length}개 발견`);
+          tables.forEach(table => {
+            // 테이블 정리
+            cleanTableForDisplay(table);
+            pasteArea.appendChild(table.cloneNode(true));
+          });
+          updateItemCount();
+          showStatus(`엑셀 표 ${tables.length}개가 추가되었습니다!`);
+          processed = true;
+        } else {
+          // 테이블이 없는 경우 HTML 내용 직접 추가
+          const cleanedHtml = cleanHtmlContent(html);
+          if (cleanedHtml.trim()) {
+            const div = document.createElement('div');
+            div.innerHTML = cleanedHtml;
+            pasteArea.appendChild(div);
+            updateItemCount();
+            showStatus('HTML 내용이 추가되었습니다!');
+            processed = true;
+          }
+        }
       }
 
-      // 3. 일반 텍스트 → 표 구성
-      if (text && !html) {
-        const rows = text.trim().split(/\n|\r/);
-        const table = document.createElement('table');
-        rows.forEach(row => {
-          const tr = document.createElement('tr');
-          row.split('\t').forEach(cell => {
-            const td = document.createElement('td');
-            td.textContent = cell;
-            tr.appendChild(td);
-          });
-          table.appendChild(tr);
+      // 3. 텍스트 데이터 처리 (백업 또는 독립)
+      if (text && !processed) {
+        console.log('텍스트 내용 처리 중...');
+        
+        // 탭으로 구분된 데이터인지 확인 (엑셀 데이터)
+        if (text.includes('\t') && text.includes('\n')) {
+          console.log('탭 구분 데이터 감지 - 테이블로 변환');
+          const table = createTableFromText(text);
+          if (table) {
+            pasteArea.appendChild(table);
+            updateItemCount();
+            showStatus('텍스트가 표로 변환되었습니다!');
+            processed = true;
+          }
+        }
+        
+        // 일반 텍스트 처리
+        if (!processed) {
+          const textBlock = document.createElement('div');
+          textBlock.className = 'text-block';
+          textBlock.textContent = text;
+          pasteArea.appendChild(textBlock);
+          updateItemCount();
+          showStatus('텍스트가 추가되었습니다!');
+          processed = true;
+        }
+      }
+
+      if (!processed) {
+        showStatus('붙여넣기 할 수 있는 내용이 없습니다.', 'error');
+      }
+    });
+
+    // 테이블 정리 함수
+    function cleanTableForDisplay(table) {
+      // 불필요한 속성 제거
+      table.removeAttribute('style');
+      table.removeAttribute('class');
+      table.removeAttribute('cellpadding');
+      table.removeAttribute('cellspacing');
+      table.removeAttribute('border');
+      
+      // 모든 셀 정리
+      const cells = table.querySelectorAll('td, th');
+      cells.forEach(cell => {
+        // 스타일 속성 제거
+        cell.removeAttribute('style');
+        cell.removeAttribute('class');
+        cell.removeAttribute('width');
+        cell.removeAttribute('height');
+        
+        // 빈 셀 처리
+        if (!cell.textContent.trim()) {
+          cell.innerHTML = '&nbsp;';
+        }
+      });
+    }
+
+    // HTML 내용 정리
+    function cleanHtmlContent(html) {
+      // 스크립트 태그 제거
+      html = html.replace(/<script[^>]*>.*?<\/script>/gi, '');
+      // 스타일 태그 제거
+      html = html.replace(/<style[^>]*>.*?<\/style>/gi, '');
+      // 위험한 속성 제거
+      html = html.replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '');
+      return html;
+    }
+
+    // 텍스트에서 테이블 생성
+    function createTableFromText(text) {
+      const rows = text.trim().split(/\r?\n/);
+      if (rows.length < 2) return null;
+      
+      const table = document.createElement('table');
+      
+      rows.forEach((row, index) => {
+        const tr = document.createElement('tr');
+        const cells = row.split('\t');
+        
+        cells.forEach(cellText => {
+          const cell = index === 0 ? document.createElement('th') : document.createElement('td');
+          cell.textContent = cellText.trim() || '';
+          tr.appendChild(cell);
         });
-        pasteArea.appendChild(table);
+        
+        table.appendChild(tr);
+      });
+      
+      return table;
+    }
+
+    // 유틸리티 함수들
+    function focusPasteArea() {
+      pasteArea.focus();
+      showStatus('붙여넣기 영역이 활성화되었습니다!');
+    }
+
+    function clearAll() {
+      if (confirm('모든 내용을 삭제하시겠습니까?')) {
+        pasteArea.innerHTML = '<div class="item-info" id="itemInfo" style="display: none;">항목: 0</div>';
+        itemCount = 0;
+        itemInfo.style.display = 'none';
+        showStatus('모든 내용이 삭제되었습니다!');
+      }
+    }
+
+    function downloadAsHtml() {
+      if (itemCount === 0) {
+        showStatus('저장할 내용이 없습니다!', 'error');
+        return;
+      }
+      
+      const content = pasteArea.innerHTML;
+      const html = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>붙여넣기 내용 - ${new Date().toLocaleDateString()}</title>
+  <style>
+    body { font-family: "Malgun Gothic", sans-serif; padding: 20px; line-height: 1.6; }
+    table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+    table td, table th { border: 1px solid #ddd; padding: 8px 12px; }
+    table th { background-color: #f8fafc; font-weight: 600; }
+    img { max-width: 100%; height: auto; }
+    .text-block { margin: 16px 0; padding: 16px; background: #f8fafc; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>붙여넣기 내용</h1>
+  <p>생성일: ${new Date().toLocaleString()}</p>
+  <hr>
+  ${content}
+</body>
+</html>`;
+      
+      try {
+        // 보안 PC 환경에서 다운로드 시도
+        const blob = new Blob([html], { type: 'text/html; charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `paste_content_${new Date().toISOString().slice(0, 10)}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showStatus('HTML 파일이 저장되었습니다!');
+      } catch (error) {
+        // 다운로드가 막힌 경우 대안 제공
+        showHTMLPreview(html);
+        showStatus('다운로드가 제한되어 미리보기로 표시합니다.', 'error');
+      }
+    }
+    
+    function showHTMLPreview(html) {
+      // 새 창에서 HTML 내용 표시 (보안 환경에서 대안)
+      const newWindow = window.open('', '_blank');
+      if (newWindow) {
+        newWindow.document.write(html);
+        newWindow.document.close();
+      } else {
+        // 새 창도 막힌 경우, 텍스트로 표시
+        const pre = document.createElement('pre');
+        pre.style.cssText = 'background: #f5f5f5; padding: 20px; margin: 20px 0; border-radius: 6px; font-size: 12px; overflow: auto; max-height: 300px;';
+        pre.textContent = html;
+        pasteArea.appendChild(pre);
+        showStatus('HTML 코드가 아래에 표시되었습니다.');
+      }
+    }
+
+    function copyAllContent() {
+      if (itemCount === 0) {
+        showStatus('복사할 내용이 없습니다!', 'error');
+        return;
+      }
+      
+      try {
+        // 최신 클립보드 API 시도
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          const textContent = pasteArea.innerText;
+          navigator.clipboard.writeText(textContent).then(() => {
+            showStatus('클립보드에 복사되었습니다! (최신 API)');
+          }).catch(() => {
+            // fallback to legacy method
+            copyWithLegacyMethod();
+          });
+        } else {
+          copyWithLegacyMethod();
+        }
+      } catch (error) {
+        copyWithLegacyMethod();
+      }
+    }
+    
+    function copyWithLegacyMethod() {
+      try {
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(pasteArea);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        
+        const success = document.execCommand('copy');
+        if (success) {
+          showStatus('클립보드에 복사되었습니다! (레거시)');
+        } else {
+          throw new Error('복사 실패');
+        }
+        
+        selection.removeAllRanges();
+      } catch (err) {
+        // 복사가 완전히 막힌 경우 선택만 해주기
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(pasteArea);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        showStatus('내용이 선택되었습니다. Ctrl+C로 복사하세요.', 'error');
+      }
+    }
+
+    // 초기 설정
+    pasteArea.focus();
+    
+    // 키보드 단축키
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.key === 'v') {
+        // Ctrl+V 감지 시 포커스 확인
+        setTimeout(() => {
+          if (document.activeElement !== pasteArea) {
+            pasteArea.focus();
+          }
+        }, 10);
       }
     });
   </script>
