@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>엑셀 표 붙여넣기 복제형</title>
+  <title>붙여넣기 통합 뷰어</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -18,10 +18,6 @@
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
     #pasteArea {
       width: 100%;
       min-height: 400px;
@@ -32,12 +28,21 @@
       white-space: pre-wrap;
       overflow: auto;
     }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 10px;
+    }
+    table td {
+      border: 1px solid #ccc;
+      padding: 6px 8px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>엑셀 표 붙여넣기 (Papago 스타일)</h1>
-    <p>엑셀에서 표를 복사한 후 아래에 붙여넣으세요.</p>
+    <h1>엑셀/텍스트/이미지 붙여넣기</h1>
+    <p>엑셀 표, 텍스트, 캡처 이미지를 복사한 후 아래 영역에 Ctrl+V 하세요.</p>
     <div id="pasteArea" contenteditable="true"></div>
   </div>
 
@@ -46,33 +51,45 @@
 
     pasteArea.addEventListener('paste', function (e) {
       e.preventDefault();
-      const clipboard = e.clipboardData || window.clipboardData;
+      const clipboard = e.clipboardData;
       const html = clipboard.getData('text/html');
       const text = clipboard.getData('text/plain');
+      const items = clipboard.items;
 
-      // 우선 html이 있는지 판단 후 삽입
+      // 1. 이미지 처리
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.type.indexOf('image') !== -1) {
+          const file = item.getAsFile();
+          const url = URL.createObjectURL(file);
+          const img = document.createElement('img');
+          img.src = url;
+          img.style.maxWidth = '100%';
+          img.style.margin = '10px 0';
+          pasteArea.appendChild(img);
+        }
+      }
+
+      // 2. 엑셀 표 (HTML)
       if (html && html.includes('<table')) {
         pasteArea.innerHTML += html;
-      } else if (text) {
-        // 텍스트도 탭/줄바꿈 기준으로 table 태그 구성
+        return;
+      }
+
+      // 3. 일반 텍스트 → 표 구성
+      if (text && !html) {
         const rows = text.trim().split(/\n|\r/);
         const table = document.createElement('table');
-        table.style.borderCollapse = 'collapse';
-        table.style.width = '100%';
         rows.forEach(row => {
           const tr = document.createElement('tr');
           row.split('\t').forEach(cell => {
             const td = document.createElement('td');
             td.textContent = cell;
-            td.style.border = '1px solid #ccc';
-            td.style.padding = '6px 8px';
             tr.appendChild(td);
           });
           table.appendChild(tr);
         });
         pasteArea.appendChild(table);
-      } else {
-        pasteArea.innerText += '[클립보드에 붙여넣을 수 있는 데이터가 없습니다]';
       }
     });
   </script>
