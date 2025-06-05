@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>붙여넣기 뷰어</title>
+  <title>파파고 스타일 뷰어</title>
   <style>
     * {
       margin: 0;
@@ -12,24 +12,23 @@
     }
     
     body {
-      font-family: 'Malgun Gothic', Arial, sans-serif;
-      background: #f5f7fa;
+      font-family: 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f7f9fc;
       padding: 20px;
-      line-height: 1.6;
-      color: #333;
+      line-height: 1.5;
     }
     
     .container {
       max-width: 1000px;
       margin: 0 auto;
       background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
       overflow: hidden;
     }
     
     .header {
-      background: linear-gradient(45deg, #00c851, #007e33);
+      background: linear-gradient(135deg, #1ec800, #0fb300);
       color: white;
       padding: 30px;
       text-align: center;
@@ -37,8 +36,8 @@
     
     .header h1 {
       font-size: 28px;
-      margin-bottom: 10px;
-      font-weight: bold;
+      margin-bottom: 8px;
+      font-weight: 700;
     }
     
     .header p {
@@ -46,218 +45,218 @@
       opacity: 0.9;
     }
     
-    .content {
+    .main-content {
       padding: 30px;
     }
     
-    .warning {
-      background: #fff3cd;
-      border: 1px solid #ffeaa7;
-      color: #856404;
-      padding: 15px;
-      border-radius: 5px;
-      margin-bottom: 25px;
+    .input-section {
+      margin-bottom: 30px;
     }
     
-    .warning strong {
-      color: #d63384;
-    }
-    
-    .tabs {
-      display: flex;
-      border-bottom: 3px solid #eee;
-      margin-bottom: 25px;
-    }
-    
-    .tab-btn {
-      background: none;
-      border: none;
-      padding: 15px 25px;
-      cursor: pointer;
-      font-size: 16px;
-      color: #666;
-      border-bottom: 3px solid transparent;
-      transition: all 0.3s;
-    }
-    
-    .tab-btn:hover {
-      background: #f8f9fa;
-      color: #333;
-    }
-    
-    .tab-btn.active {
-      color: #00c851;
-      border-bottom-color: #00c851;
-      font-weight: bold;
-    }
-    
-    .tab-content {
-      display: none;
-    }
-    
-    .tab-content.active {
+    .input-label {
       display: block;
-    }
-    
-    .input-box {
-      width: 100%;
-      min-height: 250px;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
       font-size: 14px;
-      font-family: 'Courier New', monospace;
-      resize: vertical;
-      background: #fafafa;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
     }
     
-    .input-box:focus {
-      outline: none;
-      border-color: #00c851;
+    /* 파파고 스타일 입력창 */
+    .input-container {
+      position: relative;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
       background: white;
+      transition: all 0.3s ease;
     }
     
-    .file-area {
-      border: 3px dashed #ccc;
-      border-radius: 10px;
-      padding: 40px;
-      text-align: center;
-      background: #f9f9f9;
-      cursor: pointer;
-      transition: all 0.3s;
+    .input-container:focus-within {
+      border-color: #1ec800;
+      box-shadow: 0 0 0 4px rgba(30, 200, 0, 0.1);
     }
     
-    .file-area:hover {
-      border-color: #00c851;
-      background: #f0fff4;
+    .input-area {
+      width: 100%;
+      min-height: 200px;
+      max-height: 400px;
+      padding: 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-family: inherit;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+      background: transparent;
     }
     
-    .file-area input {
-      display: none;
+    .input-area::placeholder {
+      color: #9ca3af;
+      font-style: normal;
+    }
+    
+    /* 파파고 스타일 플레이스홀더 */
+    .placeholder-text {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: #9ca3af;
+      font-size: 16px;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      white-space: pre-line;
+    }
+    
+    .input-area:focus + .placeholder-text,
+    .input-area:not(:placeholder-shown) + .placeholder-text {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
     }
     
     .btn {
-      background: white;
-      border: 2px solid #ddd;
       padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background: white;
+      color: #333;
       font-size: 14px;
-      margin: 5px 5px 5px 0;
-      transition: all 0.3s;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
     
     .btn:hover {
-      border-color: #00c851;
+      border-color: #1ec800;
       background: #f0fff4;
     }
     
     .btn-primary {
-      background: #00c851;
+      background: #1ec800;
       color: white;
-      border-color: #00c851;
+      border-color: #1ec800;
     }
     
     .btn-primary:hover {
-      background: #007e33;
+      background: #16a085;
     }
     
-    .result-box {
-      background: #f8f9fa;
-      border: 1px solid #ddd;
-      border-radius: 8px;
+    .result-section {
+      border-top: 1px solid #f0f0f0;
+      padding-top: 30px;
+    }
+    
+    .result-area {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
       padding: 20px;
-      margin-top: 20px;
-      min-height: 150px;
-      max-height: 400px;
+      min-height: 200px;
+      max-height: 500px;
       overflow: auto;
     }
     
+    .empty-state {
+      text-align: center;
+      color: #9ca3af;
+      font-style: italic;
+      padding: 60px 20px;
+    }
+    
+    /* 파파고 스타일 테이블 */
     table {
       width: 100%;
       border-collapse: collapse;
       margin: 15px 0;
       background: white;
-      border-radius: 5px;
+      border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
     
     table th, table td {
-      border: 1px solid #ddd;
-      padding: 12px 15px;
+      padding: 12px 16px;
       text-align: left;
+      border-bottom: 1px solid #f0f0f0;
     }
     
     table th {
-      background: #f1f3f4;
-      font-weight: bold;
-      color: #333;
+      background: #f8fafc;
+      font-weight: 600;
+      color: #374151;
+      font-size: 14px;
     }
     
-    table tr:nth-child(even) {
-      background: #f9f9f9;
+    table tr:last-child td {
+      border-bottom: none;
     }
     
     table tr:hover {
-      background: #f0fff4;
+      background: #f9fafb;
     }
     
-    .help-box {
-      background: #e3f2fd;
-      padding: 20px;
-      border-radius: 8px;
-      margin: 15px 0;
+    .info-text {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 10px;
+      text-align: center;
     }
     
-    .help-box h4 {
-      color: #1976d2;
-      margin-bottom: 10px;
-    }
-    
-    .help-box ol {
-      margin-left: 20px;
-    }
-    
-    .help-box li {
-      margin: 8px 0;
-    }
-    
-    .alert {
+    .status-indicator {
       position: fixed;
       top: 20px;
       right: 20px;
-      padding: 15px 25px;
-      border-radius: 5px;
+      padding: 12px 20px;
+      border-radius: 8px;
       color: white;
-      font-weight: bold;
+      font-weight: 500;
       z-index: 1000;
       transform: translateX(100%);
-      transition: transform 0.3s;
+      transition: transform 0.3s ease;
     }
     
-    .alert.show {
+    .status-indicator.show {
       transform: translateX(0);
     }
     
-    .alert.success {
-      background: #28a745;
+    .status-indicator.success {
+      background: #10b981;
     }
     
-    .alert.error {
-      background: #dc3545;
+    .status-indicator.error {
+      background: #ef4444;
     }
     
-    .small-text {
-      font-size: 12px;
-      color: #666;
-      margin-top: 10px;
+    /* 파파고 스타일 로딩 */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #1ec800;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
     }
     
-    /* 모바일 대응 */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* 모바일 반응형 */
     @media (max-width: 768px) {
       body {
         padding: 10px;
+      }
+      
+      .main-content {
+        padding: 20px;
       }
       
       .header {
@@ -268,19 +267,8 @@
         font-size: 24px;
       }
       
-      .content {
-        padding: 20px;
-      }
-      
-      .tabs {
-        flex-wrap: wrap;
-      }
-      
-      .tab-btn {
-        flex: 1;
-        min-width: 120px;
-        padding: 12px 15px;
-        font-size: 14px;
+      .controls {
+        justify-content: center;
       }
     }
   </style>
@@ -289,229 +277,160 @@
   <div class="container">
     <div class="header">
       <h1>📋 데이터 붙여넣기 뷰어</h1>
-      <p>엑셀 표와 텍스트를 쉽게 확인하세요</p>
+      <p>파파고 방식으로 구현된 안전한 클립보드 처리</p>
     </div>
     
-    <div class="content">
-      <div class="warning">
-        <strong>⚠️ 보안 PC 안내</strong><br>
-        클립보드가 차단된 환경에서는 아래 대안 방법들을 사용해주세요.
-      </div>
+    <div class="main-content">
+      <div class="input-section">
+        <label class="input-label">데이터 입력</label>
+        <div class="input-container">
+          <textarea 
+            class="input-area" 
+            id="dataInput"
+            placeholder="여기에 엑셀 데이터를 붙여넣으세요...
 
-      <div class="tabs">
-        <button class="tab-btn active" onclick="showTab('input')">📝 텍스트 입력</button>
-        <button class="tab-btn" onclick="showTab('file')">📄 파일 업로드</button>
-        <button class="tab-btn" onclick="showTab('convert')">🔄 변환</button>
-        <button class="tab-btn" onclick="showTab('help')">❓ 도움말</button>
-      </div>
+🔸 엑셀에서 복사한 표 데이터
+🔸 탭, 콤마, 공백으로 구분된 텍스트
+🔸 CSV 형태의 데이터
 
-      <!-- 텍스트 입력 탭 -->
-      <div id="input" class="tab-content active">
-        <h3>직접 입력하기</h3>
-        <textarea class="input-box" id="textInput" placeholder="여기에 데이터를 입력하세요.
-
-예시 1 - 탭으로 구분:
-이름	나이	부서
-홍길동	30	개발팀  
-김영희	25	디자인팀
-
-예시 2 - 콤마로 구분:
-이름,나이,부서
-홍길동,30,개발팀
-김영희,25,디자인팀"></textarea>
+보안 PC에서는 메모장을 경유해서 붙여넣어 보세요!"
+          ></textarea>
+        </div>
         
-        <div style="margin-top: 15px;">
-          <button class="btn btn-primary" onclick="convertText()">📊 표로 변환</button>
-          <button class="btn" onclick="clearText()">🗑️ 지우기</button>
+        <div class="controls">
+          <button class="btn btn-primary" onclick="processData()">
+            <span id="processBtn">📊 표로 변환</span>
+          </button>
+          <button class="btn" onclick="clearData()">🗑️ 지우기</button>
           <button class="btn" onclick="copyResult()">📋 결과 복사</button>
+          <button class="btn" onclick="downloadCSV()">💾 CSV 다운로드</button>
         </div>
         
-        <div class="small-text">
-          💡 <strong>팁:</strong> 엑셀 → 메모장 → 여기에 붙여넣기 하면 쉬워요!
-        </div>
-        
-        <div class="result-box" id="textResult">
-          <p style="color: #999; text-align: center;">변환된 표가 여기에 나타납니다</p>
+        <div class="info-text">
+          💡 <strong>팁:</strong> Ctrl+V로 붙여넣기가 안 되면 메모장(notepad) → 복사 → 여기에 붙여넣기
         </div>
       </div>
-
-      <!-- 파일 업로드 탭 -->
-      <div id="file" class="tab-content">
-        <h3>파일 불러오기</h3>
-        <div class="file-area" onclick="document.getElementById('fileInput').click()">
-          <h4>📁 파일 선택</h4>
-          <p>클릭하거나 파일을 드래그하세요</p>
-          <p><small>지원: .txt, .csv 파일</small></p>
-          <input type="file" id="fileInput" accept=".txt,.csv" onchange="loadFile(event)">
-        </div>
-        <div class="result-box" id="fileResult">
-          <p style="color: #999; text-align: center;">업로드된 파일 내용이 여기에 나타납니다</p>
-        </div>
-      </div>
-
-      <!-- 변환 탭 -->
-      <div id="convert" class="tab-content">
-        <h3>형식 변환하기</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-          <div>
-            <h4>원본</h4>
-            <textarea class="input-box" id="convertInput" placeholder="변환할 데이터 입력" style="min-height: 200px;"></textarea>
-            <div style="margin-top: 10px;">
-              <button class="btn" onclick="toTable()">→ 표</button>
-              <button class="btn" onclick="toCSV()">→ CSV</button>
-              <button class="btn" onclick="toJSON()">→ JSON</button>
-            </div>
+      
+      <div class="result-section">
+        <label class="input-label">변환 결과</label>
+        <div class="result-area" id="resultArea">
+          <div class="empty-state">
+            위에 데이터를 입력하고 "표로 변환" 버튼을 눌러주세요
           </div>
-          <div>
-            <h4>변환 결과</h4>
-            <div class="result-box" id="convertResult" style="margin-top: 0;">
-              <p style="color: #999; text-align: center;">변환 결과가 여기에 나타납니다</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 도움말 탭 -->
-      <div id="help" class="tab-content">
-        <h3>사용 방법</h3>
-        
-        <div class="help-box">
-          <h4>🔧 방법 1: 메모장 경유 (추천)</h4>
-          <ol>
-            <li>엑셀에서 데이터 선택 후 복사 (Ctrl+C)</li>
-            <li>메모장(notepad) 열고 붙여넣기 (Ctrl+V)</li>
-            <li>메모장 내용 전체 선택해서 복사</li>
-            <li>이 사이트 "텍스트 입력"에 붙여넣기</li>
-          </ol>
-        </div>
-
-        <div class="help-box" style="background: #f3e5f5;">
-          <h4>📁 방법 2: 파일 저장</h4>
-          <ol>
-            <li>엑셀에서 "다른 이름으로 저장"</li>
-            <li>파일 형식을 "CSV" 선택</li>
-            <li>저장된 파일을 "파일 업로드"에서 선택</li>
-          </ol>
-        </div>
-
-        <div class="help-box" style="background: #fff3e0;">
-          <h4>⌨️ 방법 3: 직접 타이핑</h4>
-          <ol>
-            <li>엑셀 화면 보면서 직접 입력</li>
-            <li>열 구분은 탭, 콤마, 스페이스 사용</li>
-            <li>소량 데이터에 효과적</li>
-          </ol>
-        </div>
-
-        <div class="help-box" style="background: #e8f5e8;">
-          <h4>📋 지원하는 구분자</h4>
-          <ul>
-            <li><strong>탭:</strong> 열1[탭]열2[탭]열3</li>
-            <li><strong>콤마:</strong> 열1,열2,열3</li>
-            <li><strong>스페이스:</strong> 열1 열2 열3</li>
-            <li><strong>파이프:</strong> 열1|열2|열3</li>
-          </ul>
         </div>
       </div>
     </div>
   </div>
   
-  <div class="alert" id="alert"></div>
+  <div class="status-indicator" id="statusIndicator"></div>
 
   <script>
-    // 알림 표시
-    function showAlert(message, type = 'success') {
-      const alert = document.getElementById('alert');
-      alert.textContent = message;
-      alert.className = `alert ${type} show`;
+    const dataInput = document.getElementById('dataInput');
+    const resultArea = document.getElementById('resultArea');
+    const statusIndicator = document.getElementById('statusIndicator');
+    const processBtn = document.getElementById('processBtn');
+
+    // 상태 메시지 표시
+    function showStatus(message, type = 'success') {
+      statusIndicator.textContent = message;
+      statusIndicator.className = `status-indicator ${type} show`;
       setTimeout(() => {
-        alert.classList.remove('show');
+        statusIndicator.classList.remove('show');
       }, 3000);
     }
 
-    // 탭 전환
-    function showTab(tabName) {
-      // 모든 탭 콘텐츠 숨기기
-      document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
-      });
+    // 파파고 방식 이벤트 리스너들
+    dataInput.addEventListener('paste', handlePaste);
+    dataInput.addEventListener('input', handleInput);
+    dataInput.addEventListener('change', handleInput);
+
+    // 붙여넣기 이벤트 (파파고 방식)
+    function handlePaste(event) {
+      console.log('Paste event detected');
       
-      // 모든 탭 버튼 비활성화
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      
-      // 선택된 탭 활성화
-      document.getElementById(tabName).classList.add('active');
-      event.target.classList.add('active');
+      // 기본 붙여넣기 동작은 그대로 두고, 추가 처리만 수행
+      setTimeout(() => {
+        const value = dataInput.value;
+        if (value.trim()) {
+          console.log('Pasted content:', value.substring(0, 100) + '...');
+          showStatus('데이터가 붙여넣어졌습니다!');
+          
+          // 자동으로 표 형태인지 감지하여 미리보기
+          if (detectTableData(value)) {
+            setTimeout(() => {
+              processData();
+            }, 500);
+          }
+        }
+      }, 100);
     }
 
-    // 텍스트를 표로 변환
-    function convertText() {
-      const input = document.getElementById('textInput').value.trim();
-      if (!input) {
-        showAlert('변환할 텍스트를 입력하세요!', 'error');
+    // 입력 변화 감지 (파파고 방식)
+    function handleInput(event) {
+      const value = dataInput.value.trim();
+      if (value) {
+        console.log('Input detected, length:', value.length);
+      }
+    }
+
+    // 표 데이터 감지
+    function detectTableData(text) {
+      const lines = text.split('\n').filter(line => line.trim());
+      if (lines.length < 2) return false;
+      
+      // 탭이나 콤마가 포함되어 있으면 표 데이터로 판단
+      return lines[0].includes('\t') || lines[0].includes(',') || lines[0].includes('|');
+    }
+
+    // 데이터 처리 (파파고 방식)
+    function processData() {
+      const inputText = dataInput.value.trim();
+      
+      if (!inputText) {
+        showStatus('처리할 데이터를 입력해주세요!', 'error');
         return;
       }
 
-      const result = parseToTable(input);
-      document.getElementById('textResult').innerHTML = result;
-      showAlert('표로 변환 완료!');
-    }
-
-    // 텍스트 지우기
-    function clearText() {
-      document.getElementById('textInput').value = '';
-      document.getElementById('textResult').innerHTML = '<p style="color: #999; text-align: center;">변환된 표가 여기에 나타납니다</p>';
-      showAlert('내용이 삭제되었습니다');
-    }
-
-    // 결과 복사 (시도)
-    function copyResult() {
-      try {
-        const resultDiv = document.getElementById('textResult');
-        const range = document.createRange();
-        range.selectNodeContents(resultDiv);
-        const selection = window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-        
-        if (document.execCommand('copy')) {
-          showAlert('복사되었습니다!');
-        } else {
-          throw new Error('복사 실패');
+      // 로딩 표시
+      processBtn.innerHTML = '<span class="loading"></span> 처리중...';
+      
+      setTimeout(() => {
+        try {
+          const result = parseTextToTable(inputText);
+          resultArea.innerHTML = result;
+          showStatus('표로 변환이 완료되었습니다!');
+        } catch (error) {
+          console.error('Processing error:', error);
+          showStatus('데이터 처리 중 오류가 발생했습니다!', 'error');
+        } finally {
+          processBtn.innerHTML = '📊 표로 변환';
         }
-        selection.removeAllRanges();
-      } catch (err) {
-        showAlert('복사 기능이 제한되어 있습니다', 'error');
-      }
+      }, 300);
     }
 
-    // 데이터를 표로 파싱
-    function parseToTable(text) {
+    // 텍스트를 표로 변환 (파파고 방식)
+    function parseTextToTable(text) {
       const lines = text.split('\n').filter(line => line.trim());
-      if (lines.length === 0) return '<p>데이터가 없습니다</p>';
-
-      // 구분자 자동 감지
-      let separator = '\t';
-      const firstLine = lines[0];
-      if (firstLine.includes(',') && !firstLine.includes('\t')) {
-        separator = ',';
-      } else if (firstLine.includes('|')) {
-        separator = '|';
-      } else if (!firstLine.includes('\t') && firstLine.includes(' ')) {
-        separator = /\s+/; // 공백 하나 이상
+      
+      if (lines.length === 0) {
+        return '<div class="empty-state">변환할 데이터가 없습니다</div>';
       }
 
+      // 구분자 자동 감지 (파파고 방식)
+      let delimiter = detectDelimiter(lines[0]);
+      
+      console.log('Detected delimiter:', delimiter === '\t' ? 'TAB' : delimiter);
+      
       let html = '<table>';
       
       lines.forEach((line, index) => {
         html += '<tr>';
-        const cells = typeof separator === 'string' ? line.split(separator) : line.split(separator);
         
-        cells.forEach(cell => {
+        const cells = line.split(delimiter);
+        cells.forEach(cellText => {
           const tag = index === 0 ? 'th' : 'td';
-          html += `<${tag}>${cell.trim()}</${tag}>`;
+          const cleanText = cellText.trim() || '&nbsp;';
+          html += `<${tag}>${cleanText}</${tag}>`;
         });
         
         html += '</tr>';
@@ -519,136 +438,121 @@
       
       html += '</table>';
       
-      const sepName = separator === '\t' ? '탭' : (separator.toString().includes('s+') ? '공백' : separator);
-      html += `<div class="small-text">📊 ${lines.length}행 × ${lines[0].split(separator).length}열 (구분자: ${sepName})</div>`;
+      // 정보 표시
+      const delimiterName = delimiter === '\t' ? '탭' : 
+                           delimiter === ',' ? '콤마' : 
+                           delimiter === '|' ? '파이프' : '공백';
+      
+      html += `<div class="info-text">
+        📊 ${lines.length}행 × ${lines[0].split(delimiter).length}열 
+        (구분자: ${delimiterName})
+      </div>`;
       
       return html;
     }
 
-    // 파일 드래그 앤 드롭
-    const fileArea = document.querySelector('.file-area');
-    
-    fileArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      fileArea.style.borderColor = '#00c851';
-      fileArea.style.background = '#f0fff4';
-    });
-    
-    fileArea.addEventListener('dragleave', (e) => {
-      e.preventDefault();
-      fileArea.style.borderColor = '#ccc';
-      fileArea.style.background = '#f9f9f9';
-    });
-    
-    fileArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      fileArea.style.borderColor = '#ccc';
-      fileArea.style.background = '#f9f9f9';
-      
-      const files = e.dataTransfer.files;
-      if (files.length > 0) {
-        processFile(files[0]);
-      }
-    });
+    // 구분자 감지 (파파고 방식)
+    function detectDelimiter(line) {
+      // 우선순위: 탭 > 콤마 > 파이프 > 공백
+      if (line.includes('\t')) return '\t';
+      if (line.includes(',')) return ',';
+      if (line.includes('|')) return '|';
+      return /\s+/; // 공백 (정규식)
+    }
 
-    // 파일 로드
-    function loadFile(event) {
-      const file = event.target.files[0];
-      if (file) {
-        processFile(file);
+    // 데이터 지우기
+    function clearData() {
+      if (confirm('입력된 데이터를 모두 지우시겠습니까?')) {
+        dataInput.value = '';
+        resultArea.innerHTML = '<div class="empty-state">위에 데이터를 입력하고 "표로 변환" 버튼을 눌러주세요</div>';
+        showStatus('데이터가 삭제되었습니다');
       }
     }
 
-    // 파일 처리
-    function processFile(file) {
-      const extension = file.name.split('.').pop().toLowerCase();
-      
-      if (extension === 'txt' || extension === 'csv') {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const content = e.target.result;
-          const result = parseToTable(content);
-          document.getElementById('fileResult').innerHTML = result;
-          showAlert(`${file.name} 파일을 불러왔습니다!`);
-        };
-        reader.readAsText(file, 'UTF-8');
-      } else {
-        showAlert('txt 또는 csv 파일만 지원합니다!', 'error');
-      }
-    }
-
-    // 변환 기능들
-    function toTable() {
-      const input = document.getElementById('convertInput').value.trim();
-      if (!input) {
-        showAlert('변환할 데이터를 입력하세요!', 'error');
-        return;
-      }
-      
-      const result = parseToTable(input);
-      document.getElementById('convertResult').innerHTML = result;
-      showAlert('표 형식으로 변환했습니다!');
-    }
-
-    function toCSV() {
-      const input = document.getElementById('convertInput').value.trim();
-      if (!input) {
-        showAlert('변환할 데이터를 입력하세요!', 'error');
-        return;
-      }
-      
-      const lines = input.split('\n').filter(line => line.trim());
-      const csvContent = lines.map(line => {
-        return line.replace(/\t/g, ',').replace(/\|/g, ',').replace(/\s+/g, ',');
-      }).join('\n');
-      
-      document.getElementById('convertResult').innerHTML = 
-        `<pre style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px; white-space: pre-wrap;">${csvContent}</pre>`;
-      showAlert('CSV 형식으로 변환했습니다!');
-    }
-
-    function toJSON() {
-      const input = document.getElementById('convertInput').value.trim();
-      if (!input) {
-        showAlert('변환할 데이터를 입력하세요!', 'error');
-        return;
-      }
-      
-      const lines = input.split('\n').filter(line => line.trim());
-      if (lines.length < 2) {
-        showAlert('최소 2행(헤더+데이터)이 필요합니다!', 'error');
-        return;
-      }
-      
+    // 결과 복사 (파파고 방식)
+    function copyResult() {
       try {
-        const headers = lines[0].split(/\t|,|\||\s+/).map(h => h.trim());
-        const data = lines.slice(1).map(line => {
-          const values = line.split(/\t|,|\||\s+/).map(v => v.trim());
-          const obj = {};
-          headers.forEach((header, i) => {
-            obj[header] = values[i] || '';
-          });
-          return obj;
+        const tables = resultArea.querySelectorAll('table');
+        if (tables.length === 0) {
+          showStatus('복사할 표가 없습니다!', 'error');
+          return;
+        }
+
+        // 표를 텍스트로 변환
+        let textContent = '';
+        tables[0].querySelectorAll('tr').forEach(row => {
+          const cells = Array.from(row.querySelectorAll('th, td'));
+          const rowText = cells.map(cell => cell.textContent.trim()).join('\t');
+          textContent += rowText + '\n';
         });
+
+        // 임시 textarea 생성해서 복사 (파파고 방식)
+        const tempTextarea = document.createElement('textarea');
+        tempTextarea.value = textContent;
+        document.body.appendChild(tempTextarea);
+        tempTextarea.select();
         
-        const jsonContent = JSON.stringify(data, null, 2);
-        document.getElementById('convertResult').innerHTML = 
-          `<pre style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px; white-space: pre-wrap;">${jsonContent}</pre>`;
-        showAlert('JSON 형식으로 변환했습니다!');
-      } catch (err) {
-        showAlert('JSON 변환에 실패했습니다!', 'error');
+        if (document.execCommand('copy')) {
+          showStatus('표가 클립보드에 복사되었습니다!');
+        } else {
+          throw new Error('복사 실패');
+        }
+        
+        document.body.removeChild(tempTextarea);
+      } catch (error) {
+        showStatus('복사 기능이 제한되어 있습니다', 'error');
       }
     }
 
-    // 페이지 로드 시 실행
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('데이터 뷰어가 로드되었습니다');
+    // CSV 다운로드
+    function downloadCSV() {
+      const tables = resultArea.querySelectorAll('table');
+      if (tables.length === 0) {
+        showStatus('다운로드할 표가 없습니다!', 'error');
+        return;
+      }
+
+      let csvContent = '';
+      tables[0].querySelectorAll('tr').forEach(row => {
+        const cells = Array.from(row.querySelectorAll('th, td'));
+        const rowText = cells.map(cell => `"${cell.textContent.trim()}"`).join(',');
+        csvContent += rowText + '\n';
+      });
+
+      try {
+        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv; charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `table_data_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showStatus('CSV 파일이 다운로드되었습니다!');
+      } catch (error) {
+        showStatus('다운로드 기능이 제한되어 있습니다', 'error');
+      }
+    }
+
+    // 키보드 단축키 (파파고 방식)
+    document.addEventListener('keydown', function(event) {
+      // Ctrl+Enter: 처리
+      if (event.ctrlKey && event.key === 'Enter') {
+        event.preventDefault();
+        processData();
+      }
       
-      // 클립보드 API 지원 여부 확인
-      if (!navigator.clipboard) {
-        console.log('클립보드 API를 지원하지 않습니다');
+      // Ctrl+L: 지우기
+      if (event.ctrlKey && event.key === 'l') {
+        event.preventDefault();
+        clearData();
       }
     });
+
+    // 초기화
+    dataInput.focus();
+    console.log('파파고 스타일 뷰어가 로드되었습니다');
   </script>
 </body>
 </html>
